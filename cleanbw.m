@@ -23,8 +23,11 @@ N = numel(pics);
 for k = 1:N
     pic = imread(pics(k).name);
     pic=im2double(pic);
+    
+%     se = strel('disk',8);    
+%     pic = imdilate(pic,se);
+    
     pic = ~imfill(~pic,'holes');
-%     cc = bwconncomp(pic)
-%     regionprops(cc)
+    
     imwrite(pic, fullfile(['clean' directory],pics(k).name),'Compression','None');
 end

@@ -20,6 +20,11 @@ segmovie(dir_str, thres)
 %% Clean up all the images 
 cleanbw('segsample_raw_images');
 
+%% Find skeleton of all images and save images with skeletons overlaid
+% this code is optional for measurements because the measurement code calls
+% the skeletonization separately. This cell is purely for visualization.
+skelmovie('cleansegsample_raw_images')
+
 %% define structure and get rid of anything that isn't a folder
 
 % get all files at current directory level starting with wildcard

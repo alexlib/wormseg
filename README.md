@@ -21,3 +21,10 @@ Place both repositories on your MATLAB search path.
 In this version of the code, the function "skeleton.m" from N. Howe's library is explictly called. Check to make sure that that function is working.
 
 Run the individual code blocks separated by cells in the main_analysis.m code file.
+
+Sample Displacement Field        |  Sample Maximal Strain Projection
+:-------------------------:|:-------------------------:
+![](sample_raw_images/t4.tif)	|	![](skelcleansegsample_raw_images/t4.tif)
+
+
+
