@@ -22,9 +22,9 @@ In this version of the code, the function "skeleton.m" from N. Howe's library is
 
 Run the individual code blocks separated by cells in the main_analysis.m code file.
 
-Sample Displacement Field        |  Sample Maximal Strain Projection
+Initial Image        |  Processed Image
 :-------------------------:|:-------------------------:
-![](sample_raw_images/t4.tif)	|	![](skelcleansegsample_raw_images/t4.tif)
+![](t4init.png)	|	![](t4fin.png)
 
 
 
