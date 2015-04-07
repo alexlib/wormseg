@@ -1,5 +1,29 @@
+% wormseg
+%
+% a set of analysis routines for segmentation and skeletonization of 
+% large numbers of bright field microscope images
+%
+% The code was developed by the Brangwynne laboratory at Princeton University. 
+% If using this code (or a modified form) please cite:
+%
+%  W.Gilpin, S. Uppaluri, C. Brangwynne "Worms under pressure: 
+%  bulk mechanical properties of C. elegans are independent of the cuticle"Äù 
+%  Biophysical Journal, 2015.
+%
+%
+
+%% Segment all the images in a specified directory
+thres = .8; % the brightness threshold for segmentation
+dir_str = 'sample_raw_images'; % the directory in which the images are found
+segmovie(dir_str, thres)
+
+%% Clean up all the images 
+cleanbw('segsample_raw_images');
+
 %% define structure and get rid of anything that isn't a folder
-folds=dir('seg*');     % get all files at current directory level starting with wildcard
+
+% get all files at current directory level starting with wildcard
+folds=dir('clean*');
 
 N = numel(folds);
 ii=1;
@@ -11,14 +35,21 @@ while ii<=N
     ii=ii+1;
 end
 disp(N)
-%% run the function a bunch of times
+
+
+
+%% Find the lengths of everything in the directory
 N=numel(folds);
 for ii=1:N
     folds(ii).data=seglength(folds(ii).name);
     disp(folds(ii).name);
 end
 disp('loop complete')
-%% get rid of spikes
+
+
+
+%% OPTIONAL: median filter the measurements to discard any outliers
+% this cell generally isn't necessary if you have clean microscopy data.
 windex=4;
 N=numel(folds);
 for ii=9:9
@@ -28,6 +59,8 @@ for ii=9:9
     data=data(2:end-1,:);
     folds(ii).data=data;
 end
+
+
 %% plot results
 close all
 aindex=2;
@@ -41,6 +74,8 @@ for ii=1:N
     data=folds(ii).data;
     plot(linspace(0,1,length(data)),(pi/4)*(data(:,2).^2./data(:,4))/(1.1039e5)^1.5)
 end 
+
+
 %% plot results by volume versus pressure
 close all
 donormalize=0;
@@ -66,6 +101,9 @@ xlim([0,101.325]);
 % set bottom y limit to zero but keep automatically set top limit
 yL = ylim(gca);
 ylim([0, yL(2)]);
+
+
+
 
 %% extract measurements from data structure
 allcolors=[0.59375 0.257813 0.886719;0.800781 0.0625 0.460938;0.278431 0.788235 0.478431;0.917647 0.682353 0.105882;0.372549 0.596078 1.; 0.8 0.8 .8;1.0 .3882 .2784];
@@ -188,14 +226,21 @@ disp(mean(slopes));disp(std(slopes));
 disp(mean(slopes2));disp(std(slopes2));
 disp(mean(slopes3));disp(std(slopes3));
 legend off
+
+
+
 %% write the slopes to a text file
 fileID = fopen('slopes.txt','w');
 fprintf(fileID,'%4.4f\n',slopes);
 fclose(fileID);
+
+
 %% plot hysteresis
 allslopes=abs([slopes slopes2 slopes3]);
 slopestats=[mean(allslopes); std(allslopes)];
 errorbar([1:3],mm(1,:),mm(2,:),'.');hold on;plot(mm(1,:),'.k','MarkerSize',30);
+
+
 %% look at isotropy
 lindex=4;
 aindex=2;
@@ -209,6 +254,8 @@ end
 xlim([0,101.325]);
 ylim([.82 1.18])
 pbaspect([3 1 1])
+
+
 %% look at rates
 figure()
 for ii=1:N
@@ -235,6 +282,8 @@ xlim([0, .7])
 xlabel('initial size');
 ylabel('inverse modulus')
 %plot([min1; min2; max1; max2])
+
+
 %% plot divergence of modulus
 % dependency: sgfilter.m on FileExchange, by YangQuan Chen
 close all
@@ -285,61 +334,3 @@ for ii=1:N
 end
 
 
-% crl=220; % crop parameters
-% crr=0;
-% f=fit(log(vfrac(lh+crl:end-rh-crr)),log(bulks(lh+crl:end-rh-crr)),'poly1')
-% plot(f,log(vfrac(lh+crl:end-rh-crr)),log(bulks(lh+crl:end-rh-crr)))
-% legend off
-
-
-
-
-
-
-%% plot results by volume versus pressure in log space
-close all
-donormalize=1;
-half_periods=3;
-aindex=2;
-lindex=4;
-minvol=.5; % minimum fraction of volume in syringe at max pressure
-N=numel(folds);
-data=folds(1).data;
-figure()
-sel=1:floor((1/half_periods)*length(data));
-ps=1./linspace(1,minvol,length(sel))-1; % volume goes to .5 in sel
-if donormalize
-    cor_f=(pi/4)*((data(1,aindex).^2)./data(1,lindex)/(1.1039e5)^1.5);
-else
-    cor_f=1;
-end
-loglog(ps,(pi/4)*((data(sel,aindex).^2)./data(sel,lindex)/(1.1039e5)^1.5)/cor_f,'.');
-hold all;
-for ii=2:N
-    data=folds(ii).data;
-    sel=1:floor((1/half_periods)*length(data));
-     ps=1./linspace(1,minvol,length(sel))-1;
-    if donormalize
-        cor_f=(pi/4)*((data(1,aindex).^2)./data(1,lindex)/(1.1039e5)^1.5);
-    else
-        cor_f=1;
-    end
-    loglog(ps,(pi/4)*((data(sel,aindex).^2)./data(sel,lindex)/(1.1039e5)^1.5)/cor_f,'.');
-end
-
-%% USE UNPRUNED DATA SET. plot time series---good choices are 11 (6 min), 18 (10 min), 15 (20 min)
-% need to pick the time length in seconds
-dset=11;
-donormalize=0;
-data=folds(dset).data;
-if donormalize
-    cor_f=(pi/4)*((data(1,aindex).^2)./data(1,lindex)/(1.1039e5)^1.5);
-else
-    cor_f=1;
-end
-% plot([NaN NaN])
-% hold all;
-% plot([NaN NaN])
-plot(linspace(0,3*5*60,length(data)),(pi/4)*(data(:,2).^2./data(:,4))/(1.1039e5)^1.5/cor_f)
-xlim([0 3*5*60])
-pbaspect([3 1 1] )

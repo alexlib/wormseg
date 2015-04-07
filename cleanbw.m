@@ -1,14 +1,11 @@
-function segmovie(directory, thres)
+function cleanbw(directory)
 %
-% This function segments a time series of microscope images using simple
-% thresholding, and writes the resulting segmented images to tifs in a
-% subfolder in the same directory
+% This function finds all the .tif files in a directory and removes all but
+% the largest objects. It then fills all holes in the images
 %
 % directory : string
 %   a string specifying the relative path of the files to be segmented
 %
-% thres : double
-%   a number between 0 and 1 that determines the brightness thresolding
 %
 % The code was developed by the Brangwynne laboratory at Princeton University. 
 % If using this code (or a modified form) please cite:
@@ -17,17 +14,17 @@ function segmovie(directory, thres)
 %  bulk mechanical properties of C. elegans are independent of the cuticle"Äù 
 %  Biophysical Journal, 2015.
 
+
 addpath(directory);
 pics = dir(fullfile(directory,'*.tif'));
-mkdir(['seg' directory]);
-addpath(['seg' directory]);
+mkdir(['clean' directory]);
 N = numel(pics);
 
 for k = 1:N
     pic = imread(pics(k).name);
     pic=im2double(pic);
-    pic=pic(:,:,1);
-    pic=imadjust(pic);
-    pic=im2bw(pic,thres); % use ~ if you want white on black
-    imwrite(pic, fullfile(['seg' directory],pics(k).name),'Compression','None');
+    pic = ~imfill(~pic,'holes');
+%     cc = bwconncomp(pic)
+%     regionprops(cc)
+    imwrite(pic, fullfile(['clean' directory],pics(k).name),'Compression','None');
 end
