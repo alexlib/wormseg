@@ -22,6 +22,7 @@ In this version of the code, the function "skeleton.m" from N. Howe's library is
 
 Run the individual code blocks separated by cells in the main_analysis.m code file.
 
+
 Initial Image        |  Processed Image
 :-------------------------:|:-------------------------:
 ![](t4init.png)	|	![](t4fin.png)
